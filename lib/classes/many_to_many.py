@@ -1,10 +1,16 @@
+
 class Article:
-    all_articles =[]
+    all =[]
     def __init__(self, author, magazine, title):
+        #  @kelvin based on my understanding if i want to use the setters in init method i have to first initialize the private attributes to None. hence my assumption is "self.title = title" in init method will call the title setter and is not an initialisation of the attribute.
+
+        self._author = None
+        self._magazine =None
+        self._title = None
         self.author = author 
         self.magazine = magazine
         self.title = title
-        Article.all_articles.append(self)
+        Article.all.append(self)
 
     @property
     def title(self):
@@ -12,9 +18,9 @@ class Article:
     
     @title.setter
     def title(self, value):
-        if hasattr(self, "_title"): #if already has a title no change should be made.
+        if self._title is not None: #if already has a title no change should be made.
             return
-        if isinstance(value,str) and 5 <= len(value) <= 50:
+        if isinstance(value,str) and 5 <= len(value) <= 50: # title be string 5-50 chars
             self._title =value
         else:
              print(f"Invalid title '{value}', must be string 5–50 chars") 
@@ -25,7 +31,7 @@ class Article:
 
     @author.setter
     def author(self, value):
-        if isinstance(value, Author):
+        if isinstance(value, Author): # this will ensure only instances of author is assigned to author attribute
             self._author = value
 
     @property
@@ -34,7 +40,7 @@ class Article:
 
     @magazine.setter
     def magazine(self, value):
-        if isinstance(value, Magazine):
+        if isinstance(value, Magazine): # same case to the one above
             self._magazine = value
 
 class Author:
@@ -58,24 +64,35 @@ class Author:
         
     #now to thge relationship between this classes
     def articles(self):
-        pass
+        #interate through all articles.
+        return [article for article in Article.all if article.author == self]
 
     def magazines(self):
-        pass
+        #give me magazines from this author's articles.
+        return list({article.magazine for article in self.articles()})
+
+
 
     def add_article(self, magazine, title):
-        pass
+        if isinstance(magazine, Magazine) and isinstance(title, str): # ensure magazine is an instance of Magazine and title is string
+            return Article(self, magazine, title)
 
     def topic_areas(self):
-        pass
+        if len(self.articles()) == 0:
+            return None
+        # here i use set comprehension to avoid duplicate categories wrapped in list to return list
+        return list({article.magazine.category for article in self.articles()})
 
 class Magazine:
-    all_magazines = []   # will manage all magazines and this is a class variable 
+    all= []   # will manage all magazines and this is a class variable 
 
     def __init__(self, name, category):
+        #same assumption as above or understanding it is playing with my mind.all i know is that to use the setters in init method i have to first initialize the private attributes to None.
+        self._name =None
+        self._category = None
         self.name = name
         self.category = category
-        Magazine.all_magazines.append(self)
+        Magazine.all.append(self)
     
     @property
     def name(self):
@@ -83,7 +100,7 @@ class Magazine:
     
     @name.setter
     def name(self, value):
-        if isinstance(value, str) and 2 <= len(value) <= 10:
+        if isinstance(value, str) and 2 <= len(value) <= 16:
             self._name = value
 
         else:
@@ -102,13 +119,30 @@ class Magazine:
             
 
     def articles(self):
-        pass
+        return [article for article in Article.all if article.magazine == self]
 
     def contributors(self):
-        pass
+        return list({article.author for article in self.articles()})
+    
+
+
 
     def article_titles(self):
-        pass
+        if len(self.articles()) == 0:
+            return None
+        return [article.title for article in self.articles()]
 
     def contributing_authors(self):
-        pass
+        authors = []
+        for author in self.contributors():  
+            count = len([article for article in self.articles() if article.author == author])
+            if count > 2:
+                authors.append(author)
+
+        return authors if authors else None
+    
+    def top_publisher(cls):
+        if len(Article.all) == 0:
+            return None
+    
+        return max(cls.all, key=lambda mag: len(mag.articles()))
