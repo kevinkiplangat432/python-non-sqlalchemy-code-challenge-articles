@@ -145,4 +145,4 @@ class Magazine:
         if len(Article.all) == 0:
             return None
     
-        return max(cls.all, key=lambda mag: len(mag.articles()))
+        return max(cls.all, key=lambda magazine: len(magazine.articles()))
