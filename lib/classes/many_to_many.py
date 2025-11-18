@@ -2,10 +2,10 @@
 class Article:
     all =[]
     def __init__(self, author, magazine, title):
-        #  @kelvin based on my understanding if i want to use the setters in init method i have to first initialize the private attributes to None. hence my assumption is "self.title = title" in init method will call the title setter and is not an initialisation of the attribute.
+        #  if i want to use the setters in init method i have to first initialize the private attributes to None. hence my assumption is "self.title = title" in init method will call the title setter and is not an initialisation of the attribute.
 
         self._author = None
-        self._magazine =None
+        self._magazine = None
         self._title = None
         self.author = author 
         self.magazine = magazine
